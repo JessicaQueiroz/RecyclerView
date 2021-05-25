@@ -1,14 +1,20 @@
 package com.android.recyclerview.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.android.recyclerview.R;
 import com.android.recyclerview.adapter.AdapterFilmes;
 import com.android.recyclerview.model.Filme;
+import com.android.recyclerview.model.RecyclerItemClickListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
         this.criarFilmes();
 
         //Configurar adapter
-        AdapterFilmes adapterFilmes = new AdapterFilmes();
+        AdapterFilmes adapterFilmes = new AdapterFilmes(listaFilme);
 
         //Configurar RecyclerView
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
@@ -33,7 +39,42 @@ public class MainActivity extends AppCompatActivity {
 
         // Otimizar o recyclerView
         rv_filmes.setHasFixedSize(true);
+        rv_filmes.addItemDecoration(new DividerItemDecoration(this, LinearLayout.VERTICAL));
         rv_filmes.setAdapter(adapterFilmes);
+
+        //Evento de click
+        rv_filmes.addOnItemTouchListener(
+            new RecyclerItemClickListener(
+                    getApplicationContext(),
+                    rv_filmes,
+                    new RecyclerItemClickListener.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(View view, int position) {
+                            Filme filme = listaFilme.get(position);
+                            Toast.makeText(
+                                    getApplicationContext(),
+                                    "Item pressionado " + filme.getTitulo(),
+                                    Toast.LENGTH_SHORT
+                            ).show();
+                        }
+
+                        @Override
+                        public void onLongItemClick(View view, int position) {
+                            Filme filme = listaFilme.get(position);
+                            Toast.makeText(
+                                    getApplicationContext(),
+                                    "Click longo " + filme.getTitulo(),
+                                    Toast.LENGTH_LONG
+                            ).show();
+                        }
+
+                        @Override
+                        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+
+                        }
+                    }
+            )
+        );
     }
     public void criarFilmes(){
         Filme filme = new Filme("Homem Aranha - De volta ao lar", "Aventura", "2017");
